@@ -1,6 +1,8 @@
 package com.example.guessthephrase
 
+import android.content.Context
 import android.content.DialogInterface
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -22,6 +24,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var guess_button: Button
     private lateinit var phrase_textView: TextView
     private lateinit var letter_textView: TextView
+    private lateinit var highScore_textView: TextView
+
+    private lateinit var sharedPreferences: SharedPreferences
 
     private var goal_phrase = "welcome to coding dojo"
     private var guessed_letter = ""
@@ -29,12 +34,18 @@ class MainActivity : AppCompatActivity() {
 
     private var selection = 1 //for whole phrase
     private var count = 0
+    private var highScore = 0
+    private var currentScore = 0
 
     private val myAnswerDictionary = mutableMapOf<Int, Char>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        sharedPreferences = this.getSharedPreferences(
+            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+        highScore = sharedPreferences.getInt("myHighScore", 0)
 
         var i = 0
         while(i < goal_phrase.length) {
@@ -68,6 +79,8 @@ class MainActivity : AppCompatActivity() {
         phrase_editText = findViewById(R.id.phrase_editText)
         phrase_textView = findViewById(R.id.phrase_textView)
         letter_textView = findViewById(R.id.letter_textView)
+        highScore_textView = findViewById(R.id.highScore_textView)
+        highScore_textView.text = "Your High Score: $highScore"
 
         guess_button = findViewById<Button>(R.id.guss_button)
         guess_button.setOnClickListener { Guss_the_Phrase() }
@@ -81,6 +94,7 @@ class MainActivity : AppCompatActivity() {
             if(input == goal_phrase){
                 val msg = "Great Job, You Win!!"
                 phrase_message.add(msg)
+                setHigherScore()
                 playAgainAlert(msg+",\nPlay again?")
                 endOfTheGAme(false)
                 update()
@@ -144,6 +158,7 @@ class MainActivity : AppCompatActivity() {
             if(guessed_phrase==goal_phrase){
                 val msg = "Great Job, You Win!!"
                 phrase_message.add(msg)
+                setHigherScore()
                 playAgainAlert(msg+",\nPlay again?")
                 endOfTheGAme(false)
                 update()
@@ -168,6 +183,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setHigherScore(){
+        currentScore = 10 - count
+
+        if(currentScore > highScore){
+            highScore = currentScore
+            highScore_textView.text = "Your High Score: $highScore"
+            with(sharedPreferences.edit()) {
+                putInt("myHighScore",highScore)
+                apply()
+            }
+        }
+    }
+
     private fun endOfTheGAme(bool: Boolean){
         phrase_editText.isEnabled = bool
         guess_button.isEnabled = bool
@@ -184,6 +212,7 @@ class MainActivity : AppCompatActivity() {
         guessed_phrase = ""
         selection = 1
         count = 0
+        phrase_message = ArrayList()
 
     }
 
@@ -212,6 +241,8 @@ class MainActivity : AppCompatActivity() {
         outState.putString("guessed_phrase",guessed_phrase)
         outState.putInt("selection", selection)
         outState.putInt("count", count)
+        outState.putInt("highScore", highScore)
+        outState.putInt("currentScore", currentScore)
         outState.putStringArrayList("phrase_message", phrase_message)
     }
 }
