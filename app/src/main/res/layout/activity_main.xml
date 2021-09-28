@@ -68,7 +68,7 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="text"
-            android:text="Guess the full phrase"
+            android:hint="Guess the full phrase"
             android:singleLine="true"/>
 
         <Button

@@ -30,7 +30,7 @@ class PhraseAdapter(val context: Context, val phrase_msg: ArrayList<String>):
 
         holder.itemView.apply {
             user_guss_tv.text = text
-            if(text.startsWith("Found") || text.startsWith("You")){
+            if(text.startsWith("Found") || text.startsWith("Great")){
                 user_guss_tv.setTextColor(Color.GREEN)
             }else if(text.startsWith("No")||text.startsWith("Wrong")|| text.startsWith("Invalid")||text.startsWith("Incorrect")){
                 user_guss_tv.setTextColor(Color.RED)
